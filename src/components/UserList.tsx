@@ -1,31 +1,46 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import UserCard from './UserCard';
 import '../styles/UserList.scss';
-import { userAPI, getRandomUsers } from '../utils/api';
+import { userAPI } from '../utils/api';
 import type { IUser } from '../types/types';
+import { useUserStore } from '../stores/userStore';
 
-const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom?: boolean }) => {
-  const [users, setUsers] = useState<IUser[]>([]);
+const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom: boolean }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const { users, setUsers, isRandomPage, setIsRandomPage } = useUserStore();
 
   const fetchUsers = useMemo(
-    () => isRandom ? getRandomUsers() : userAPI.getAllUsers(),
+    () => isRandom ? userAPI.getRandomUsers() : userAPI.getAllUsers(),
     [isRandom]
   );
 
+  
   useEffect(() => {
-    fetchUsers
-      .then(data => {
-        setUsers(data);
-        setIsLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setIsLoading(false);
-      });
-  }, [fetchUsers]);
+    const shouldFetch = isRandom !== isRandomPage || users.length === 0;
+      
+    if (shouldFetch) {
+      setUsers([]);
+      fetchUsers
+        .then((data: IUser[]) => {
+          setError(null);
+          setUsers(data);
+          setIsLoading(false);
+          setIsRandomPage(isRandom);
+        })
+        .catch((error: unknown) => {
+          let errorMessage = 'An unexpected error occurred';
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          setError(errorMessage);
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
+    }
+  }, [fetchUsers, isRandom, isRandomPage, users.length]);
 
   const filteredUsers = useMemo(() => {
     if(users.length === 0) return [];
@@ -44,6 +59,13 @@ const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom?: bo
 
   return (
     <div className="user-list-container">
+      <div className="user-list-header">
+        {isRandom ? (
+          <h1>Random Users</h1>
+        ) : (
+          <h1>Saved Profiles</h1>
+        )}
+      </div>
 
         <input
           type="text"
@@ -57,7 +79,7 @@ const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom?: bo
             <p>No users found</p>
         ) : (
             filteredUsers.map((user) => (
-            <UserCard key={user.id} user={user} />
+            <UserCard key={user.id} user={user} isRandom={isRandom} />
             ))
         )}
         </div>

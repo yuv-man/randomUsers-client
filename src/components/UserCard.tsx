@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import '../styles/UserCard.scss';
-import { userAPI } from '../utils/api';
 import { toast } from 'react-hot-toast';
 import type { IUser } from '../types/types';
+import { useNavigate } from 'react-router-dom';
 
-const UserCard: React.FC<{ user: IUser }> = ({ user }) => {
+const UserCard: React.FC<{ user: IUser; isRandom: boolean }> = ({ user, isRandom }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => { 
+    navigate(`/user/${user.id}`, { state: { isRandom } });
+  };
   
   const formattedName: string = `${user.name.title}. ${user.name.last} (${user.name.first})`;
   
   return (
-    <div className="user-card">
+    <div className="user-card" onClick={handleClick}>
       <div className="avatar">
         <img src={user.picture.thumbnail} alt={`${user.name.first}'s avatar`} />
       </div>

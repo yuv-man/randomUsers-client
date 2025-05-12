@@ -1,0 +1,58 @@
+.user-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .user-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-name-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .user-name {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      .user-name-input {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .save-user-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+
+    button {
+      margin: 0 5px;
+      padding: 2px 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #366ada;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
+  
+}
+
