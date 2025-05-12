@@ -40,12 +40,13 @@ const UserProfilePage: React.FC = () => {
 
   const deleteUser = (user: IUser) => {
     if(!isRandom) {
-      removeUser(user.id);
       userAPI.deleteUser(user._id);
-    } else {
-      removeUser(user.id);
-    }
-    navigate(-1);
+    } 
+    removeUser(user.id);
+    toast.success('User deleted successfully');
+    setTimeout(() => {
+      navigate(-1);
+    }, 1000);
   }
 
   const cancelEdit = (user: IUser) => {

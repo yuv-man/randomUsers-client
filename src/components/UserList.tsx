@@ -9,6 +9,7 @@ const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom: boo
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [countryFilter, setCountryFilter] = useState<string>('');
   const { users, setUsers, isRandomPage, setIsRandomPage } = useUserStore();
 
   const fetchUsers = useMemo(
@@ -44,10 +45,15 @@ const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom: boo
 
   const filteredUsers = useMemo(() => {
     if(users.length === 0) return [];
-    return users.filter(user => 
-      `${user.name.first} ${user.name.last}`.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [users, searchTerm]);
+    return users.filter(user => {
+      const nameMatch = `${user.name.first} ${user.name.last}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const countryMatch = countryFilter === '' || 
+        user.location.country.toLowerCase().includes(countryFilter.toLowerCase());
+      return nameMatch && countryMatch;
+    });
+  }, [users, searchTerm, countryFilter]);
 
   if (isLoading) {
     return <div className="user-list">Loading...</div>;
@@ -67,6 +73,7 @@ const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom: boo
         )}
       </div>
 
+      <div className="filters">
         <input
           type="text"
           placeholder="Search users by name..."
@@ -74,15 +81,24 @@ const UserList: React.FC<{ isRandom: boolean }> = ({ isRandom }: { isRandom: boo
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
-        <div className="user-list">
-        {filteredUsers.length === 0 ? (
-            <p>No users found</p>
-        ) : (
-            filteredUsers.map((user) => (
-            <UserCard key={user.id} user={user} isRandom={isRandom} />
-            ))
-        )}
-        </div>
+        <input
+          type="text"
+          placeholder="Filter by country..."
+          value={countryFilter}
+          onChange={(e) => setCountryFilter(e.target.value)}
+          className="search-input"
+        />
+      </div>
+
+      <div className="user-list">
+      {filteredUsers.length === 0 ? (
+        <p>No users found</p>
+      ) : (
+        filteredUsers.map((user) => (
+          <UserCard key={user.id} user={user} isRandom={isRandom} />
+        ))
+      )}
+      </div>
     </div>
   );
 };
