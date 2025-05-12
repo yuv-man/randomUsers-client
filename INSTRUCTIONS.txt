@@ -1,0 +1,20 @@
+instructions:
+
+after cloning the repo, run:
+npm install
+npm start
+
+tech stack:
+- react
+- typescript
+- scss (for styling)
+- react-router-dom (for routing)
+- react-hot-toast (for notifications)
+- zustand (for state management)
+- axios (for api calls)
+
+
+
+
+
+
